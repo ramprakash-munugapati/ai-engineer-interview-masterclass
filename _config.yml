@@ -1,7 +1,3 @@
-# In your repo root, create _config.yml:
-cat &lt;&lt; 'EOF' &gt; _config.yml
 title: "AI Engineer Interview Masterclass"
-description: "Foundations → Core Mechanics → Production Scale &amp; System Design Playbook"
+description: "Foundations → Core Mechanics → Production Scale & System Design Playbook"
 theme: jekyll-theme-primer
-# Alternative built-in themes you can try: jekyll-theme-cayman, jekyll-theme-minimal, jekyll-theme-slate
-EOF
