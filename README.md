@@ -2,6 +2,8 @@
 
 A practical, end-to-end study guide for AI engineering interviews, from machine-learning foundations to production LLM systems and staff-level system design.
 
+Mathematical expressions on the GitHub Pages site are typeset with MathJax. Enable JavaScript and allow the MathJax CDN to load to see formatted equations.
+
 ## What you'll find
 
 - **Foundations:** ML vs. deep learning, neural networks, optimization, and drift.
