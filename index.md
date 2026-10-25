@@ -30,8 +30,13 @@
    - [5.3 Senior Interview Red Flags to Avoid](#53-senior-interview-red-flags-to-avoid)
    - [5.4 Worked Case Study 1: Real-Time Code Completion Engine (<50ms Latency)](#54-worked-case-study-1-real-time-code-completion-engine)
    - [5.5 Worked Case Study 2: Enterprise Multi-Tenant RAG Copilot with RBAC](#55-worked-case-study-2-enterprise-multi-tenant-rag-copilot)
-   - [5.6 Candidate Self-Assessment Scorecard (15-Point Staff Rubric)](#56-candidate-self-assessment-scorecard)
+   - [5.6 Candidate Self-Assessment Scorecard (50-Point Staff Rubric)](#56-candidate-self-assessment-scorecard)
    - [5.7 Must-Read Foundational Papers (The AI Engineer Canon)](#57-must-read-foundational-papers)
+7. [Part VI: Interview Questions & Answers](#part-vi-interview-questions--answers)
+   - [Foundations & Model Selection](#foundations--model-selection)
+   - [RAG & Retrieval](#rag--retrieval)
+   - [Evaluation, Reliability & Safety](#evaluation-reliability--safety)
+   - [Serving & System Design](#serving--system-design)
 
 ---
 
@@ -42,6 +47,8 @@ Junior and mid-level candidates recite buzzwords and memorize API calls. Staff a
 3. **Why were competing alternatives rejected?** (Compare against baselines across latency, cost, and complexity).
 4. **What failure modes emerge at scale?** (Diagnose silent degradation, drift, and security vectors).
 5. **How will you quantitatively measure production health?** (Define exact offline benchmarks and online telemetry).
+
+![AI engineering lifecycle: define, build, evaluate, deploy, and monitor](assets/ai-engineering-lifecycle.svg)
 
 ---
 
@@ -205,6 +212,8 @@ $$h = W_0 x + \Delta W x = W_0 x + \frac{\alpha}{r} (B \cdot A) x$$
 ### 2.4 Production RAG: Ingestion, Hybrid Search & Two-Stage Reranking
 RAG supplies dynamic, verifiable enterprise context at inference time without modifying underlying model weights.
 
+![RAG pipeline from source documents through retrieval and grounded response](assets/rag-pipeline.svg)
+
 #### Advanced RAG Pipeline Enhancements:
 1. **Hybrid Retrieval (Dense + BM25):** Dense vectors capture semantic intent but miss specific product codes, UUIDs, or part numbers. Production pipelines run dense vector search alongside sparse **BM25 lexical search**, merging ranked results via **Reciprocal Rank Fusion (RRF)**:
    $$\text{RRF\_Score}(d) = \sum_{m \in \{\text{Dense}, \text{BM25}\}} \frac{1}{k + \text{rank}_m(d)} \quad (k \approx 60)$$
@@ -299,6 +308,22 @@ Production releases require quantitative gating via the **RAGAS Framework**:
 7. **Failure Modes & Guardrails:** Prompt injection, hallucination mitigation, output schema enforcement, and loop caps.
 8. **Observability & Continuous Retraining:** Data drift tracking (PSI > 0.2), telemetry monitoring, and data flywheel.
 
+### 5.2 The Staff Engineer Mindset: 5 Questions for Every Architecture
+Use these questions to make design decisions explicit instead of listing tools:
+1. **What is the measurable objective?** Name the user outcome, baseline, and success threshold.
+2. **What is the simplest viable alternative?** Compare against rules, keyword search, or a smaller model before adding complexity.
+3. **Where is the bottleneck?** Separate model quality, retrieval quality, network latency, GPU memory, and queueing.
+4. **How does it fail safely?** Define timeouts, fallbacks, access boundaries, and human escalation for consequential actions.
+5. **How will we know it is working?** Pair offline evaluation with online outcome metrics, latency, cost, and safety telemetry.
+
+### 5.3 Senior Interview Red Flags to Avoid
+- Naming a model or vector database before clarifying the user problem and constraints.
+- Treating a high benchmark score as proof of production quality without a representative evaluation set.
+- Assuming retrieved context is trustworthy or that prompt instructions alone enforce tenant isolation.
+- Optimizing average latency while ignoring p95/p99, queueing, and timeout behavior.
+- Proposing fine-tuning to inject frequently changing facts that belong in a retrieval system.
+- Reporting a single aggregate quality metric without segmenting failures by task, language, tenant, or risk.
+
 ---
 
 ### 5.4 Worked Case Study 1: Real-Time Code Completion Engine (<50ms Latency)
@@ -325,7 +350,7 @@ Production releases require quantitative gating via the **RAGAS Framework**:
 
 ---
 
-### 5.6 Candidate Self-Assessment Scorecard (15-Point Staff Rubric)
+### 5.6 Candidate Self-Assessment Scorecard (50-Point Staff Rubric)
 | Competency Area | Staff Engineer Benchmark Expectation | Self Score |
 | :--- | :--- | :--- |
 | **1. Foundations & Math** | Derives scaled dot-product attention variance; explains why stacked linear layers collapse without non-linear activations; distinguishes SGD, Adam, and AdamW weight decay mechanics. | [  ] / 5 |
@@ -353,3 +378,65 @@ Production releases require quantitative gating via the **RAGAS Framework**:
   - *Direct Preference Optimization (DPO)* (Rafailov et al., 2023) — Eliminating Critic and Reward models in RLHF via closed-form loss reparameterization.
 - **Tier 3 (Frontier Scaled Architectures):**
   - *DeepSeek-V3 & DeepSeek-R1 Technical Reports* (2024–2025) — Multi-Head Latent Attention (MLA), auxiliary-loss-free MoE routing, and Group Relative Policy Optimization (GRPO) for reasoning.
+
+---
+
+## Part VI: Interview Questions & Answers
+
+Use these as practice prompts: answer aloud first, state assumptions, and then compare your response with the points below. Strong answers connect technical choices to measurable product constraints.
+
+### Foundations & Model Selection
+
+#### 1. When would you choose a classical ML model instead of an LLM?
+**Answer:** Start with the task and data. For structured prediction such as churn or fraud scoring, gradient-boosted trees are often cheaper, faster, easier to calibrate, and simpler to audit. Use an LLM when the task genuinely needs language understanding or generation. Compare candidates on a representative holdout set, latency, total serving cost, explainability, and operational burden.
+
+#### 2. What is the difference between data drift and concept drift?
+**Answer:** Data drift is a change in the input distribution, P(X); concept drift is a change in the relationship between inputs and outcomes, P(Y | X). Monitor input statistics continuously, but use delayed labels, outcome metrics, and targeted audits to detect concept drift. A distribution alert is a reason to investigate, not proof that a model should be retrained.
+
+#### 3. Why does a Transformer use scaled dot-product attention?
+**Answer:** Query-key dot products tend to grow in variance with key dimension. Large logits can saturate softmax and weaken gradients. Dividing by the square root of the key dimension controls the scale, helping keep optimization stable. Attention then uses the normalized compatibility scores to mix value vectors.
+
+#### 4. Explain the difference between fine-tuning and in-context learning.
+**Answer:** In-context learning provides examples or instructions in the prompt and changes no model weights; it is quick to iterate but consumes context and may not reliably enforce behavior. Fine-tuning updates model parameters using training examples, which can improve a repeated task or style but requires data quality controls, evaluation, and a deployment lifecycle. Use retrieval for frequently changing factual knowledge rather than trying to memorize it in weights.
+
+### RAG & Retrieval
+
+#### 5. A RAG answer is wrong. How do you find the cause?
+**Answer:** Trace the request through the pipeline and inspect the evidence at each stage. Check document freshness and permissions, then measure retrieval recall on a labeled query set. Inspect ranking and reranking, verify the final prompt contains the right passages, and test whether the model follows the evidence. This separates ingestion, retrieval, context construction, and generation failures before changing components.
+
+#### 6. How do you choose a chunking strategy?
+**Answer:** Match boundaries to document structure and the questions users ask. Preserve headings and metadata, and compare fixed-size, sentence-aware, and parent-child approaches on retrieval recall and answer quality. Tune chunk size and overlap empirically: tiny chunks lose context, while large chunks add noise and consume the generation context budget.
+
+#### 7. Why combine BM25 with dense vector search?
+**Answer:** Dense retrieval is good at semantic similarity, while BM25 is often stronger for exact terms such as identifiers, names, and error codes. A hybrid retriever covers both query types; rank fusion such as RRF combines result lists without requiring their raw scores to be directly comparable. Validate the added complexity against a query set that includes both semantic and exact-match cases.
+
+#### 8. What is the purpose of a reranker?
+**Answer:** A fast retriever narrows a large corpus to a candidate set; a cross-encoder then scores each query-document pair jointly to improve ordering. Reranking can improve precision in the final context, but it adds latency and compute. Measure whether that quality gain justifies the cost and keep the candidate set bounded.
+
+### Evaluation, Reliability & Safety
+
+#### 9. How would you evaluate a generative AI feature before launch?
+**Answer:** Build a versioned, representative test set that includes common, difficult, and high-risk cases. Measure task-specific correctness, groundedness where relevant, refusal and safety behavior, and latency/cost. Use human review for ambiguous judgments, run regression tests on every prompt/model/retriever change, and launch behind a canary with rollback criteria.
+
+#### 10. How do you mitigate prompt injection in a RAG application?
+**Answer:** Treat retrieved documents and user input as untrusted data. Enforce authorization in the retrieval/data layer, not through prompt wording; give tools narrow, validated permissions; separate instructions from quoted evidence; and require confirmation for sensitive actions. Add adversarial tests and monitor tool calls and policy violations, since no single prompt pattern is a complete defense.
+
+#### 11. What should you do when an AI system's quality degrades?
+**Answer:** First determine the scope and user impact, then compare recent quality, traffic, data, model, prompt, and index changes against a known baseline. Break metrics down by task and segment, inspect examples, and isolate the failing stage. Roll back or route to a safe fallback when impact is material; retrain only after identifying a data or model issue that training can address.
+
+#### 12. How do you evaluate an LLM-as-a-judge?
+**Answer:** Treat it as a measurement instrument, not ground truth. Write a rubric tied to observable criteria, calibrate judgments against expert-labeled examples, test agreement and known biases, and blind model identity where practical. Keep human review for high-impact cases and track judge drift when the judge or prompt changes.
+
+### Serving & System Design
+
+#### 13. What drives LLM inference latency, and how would you reduce it?
+**Answer:** Separate time to first token from inter-token latency. Prompt length and prefill compute affect the first token; model size, memory bandwidth, KV-cache pressure, batching, and queueing affect generation. Profile before optimizing, then consider prompt/context reduction, quantization, efficient batching, caching, or a smaller model while checking quality and tail-latency impact.
+
+#### 14. How would you design a multi-tenant RAG service with strict access control?
+**Answer:** Authenticate the caller and derive tenant and role claims from trusted identity, then apply authorization filters at the data boundary before results reach the model. Partition or scope indexes appropriately, prevent cross-tenant cache leakage, and test adversarial access cases. Log access decisions safely, monitor isolation violations, and make authorization failures explicit rather than silently returning unrestricted results.
+
+#### 15. When should an LLM agent use a tool rather than answer directly?
+**Answer:** Use a tool when the answer depends on current or authoritative external state, or when a bounded action is needed. Keep tool schemas narrow, validate arguments and results, enforce authorization outside the model, and limit retries and steps. For consequential or irreversible actions, require explicit user confirmation and provide a safe fallback.
+
+#### 16. How do you explain a system design trade-off in an interview?
+**Answer:** State the requirements and assumptions, present a simple baseline, and compare alternatives against quality, latency, cost, reliability, and operational complexity. Explain the main bottleneck and failure mode, then define how the design will be measured and rolled back. Be clear about what you would defer until traffic or evidence justifies it.
