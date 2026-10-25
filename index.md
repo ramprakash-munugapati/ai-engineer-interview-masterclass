@@ -64,6 +64,7 @@ Artificial Intelligence spans three nested layers of capability:
   By modeling the underlying data-generating surface, they can sample entirely new, synthetic data points that follow the statistical regularities of the training corpus.
 
 #### Tabular vs. Unstructured Decision Matrix
+
 | Dimension | Classical Machine Learning | Deep Learning | Generative AI |
 | :--- | :--- | :--- | :--- |
 | **Primary Input** | Structured tabular rows, numerical/categorical data | Raw high-dimensional tensors (pixels, audio, text) | Prompts, multimodal tokens, sequence context |
@@ -347,6 +348,7 @@ Use these questions to make design decisions explicit instead of listing tools:
 ---
 
 ### 5.6 Candidate Self-Assessment Scorecard (50-Point Staff Rubric)
+
 | Competency Area | Staff Engineer Benchmark Expectation | Self Score |
 | :--- | :--- | :--- |
 | **1. Foundations & Math** | Derives scaled dot-product attention variance; explains why stacked linear layers collapse without non-linear activations; distinguishes SGD, Adam, and AdamW weight decay mechanics. | [  ] / 5 |

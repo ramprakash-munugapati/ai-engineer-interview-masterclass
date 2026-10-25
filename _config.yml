@@ -1,3 +1,4 @@
 title: "AI Engineer Interview Masterclass"
 description: "Foundations → Core Mechanics → Production Scale & System Design Playbook"
 theme: jekyll-theme-primer
+markdown: kramdown
