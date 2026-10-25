@@ -58,7 +58,7 @@ Artificial Intelligence spans three nested layers of capability:
 - **Generative AI (GenAI):** Deep Learning models that model high-dimensional data distributions to generate novel text, audio, images, or code (GPT-4, Claude 3.5, Llama 3, Midjourney).
 
 #### The Mathematical Distinction: Discriminative vs. Generative
-- **Discriminative Models:** Learn the conditional probability distribution **P(y | x)**. They optimize decision hyperplanes to partition existing data into discrete classes or continuous scalars (e.g., Logistic Regression, ResNet, BERT).
+- **Discriminative Models:** Learn the conditional probability distribution $P(y \mid x)$. They optimize decision hyperplanes to partition existing data into discrete classes or continuous scalars (e.g., Logistic Regression, ResNet, BERT).
 - **Generative Models:** Capture the joint probability distribution **P(x, y)** or the high-dimensional autoregressive conditional token distribution:
   $$P(\text{next\_token} \mid \text{context}) = \text{Softmax}\left(\frac{z_i}{\tau}\right)$$
   By modeling the underlying data-generating surface, they can sample entirely new, synthetic data points that follow the statistical regularities of the training corpus.
@@ -91,12 +91,12 @@ In production, model prototyping is 10% of the effort; 90% is building data pipe
 7. **Monitoring & Observation:** Telemetry tracking (p99 latency, VRAM) + ML drift tracking (PSI, accuracy decay).
 
 #### Data Drift vs. Concept Drift
-- **Data Drift (Covariate Shift):** The input distribution **P(X)** shifts over time while the conditional relationship **P(Y | X)** remains static. Measured via the **Population Stability Index (PSI)**:
+- **Data Drift (Covariate Shift):** The input distribution **P(X)** shifts over time while the conditional relationship $P(Y \mid X)$ remains static. Measured via the **Population Stability Index (PSI)**:
   $$\text{PSI} = \sum_{b=1}^B \left( \text{Actual}_b\% - \text{Expected}_b\% \right) \times \ln\left( \frac{\text{Actual}_b\%}{\text{Expected}_b\%} \right)$$
   - *PSI < 0.1:* Stable, no change.
   - *0.1 ≤ PSI < 0.2:* Moderate shift; schedule inspection.
   - *PSI ≥ 0.2:* Significant drift; trigger automated retraining.
-- **Concept Drift:** The conditional ground truth **P(Y | X)** shifts while input features remain identical (e.g., macroeconomic inflation shifts what income level qualifies as high-risk).
+- **Concept Drift:** The conditional ground truth $P(Y \mid X)$ shifts while input features remain identical (e.g., macroeconomic inflation shifts what income level qualifies as high-risk).
 
 > **INTERVIEW PROMPT: "You deploy an embedding-based search model, and six months later users complain search quality has cratered, yet API latency is flat. How do you triage?"**
 > - **CANDIDATE SOUNDBITE (60s):** "Flat latency indicates the infrastructure is healthy; the failure is algorithmic degradation. I first pull real-world production queries and compute the Population Stability Index and Wasserstein distance against the training baseline to detect Data Drift. Next, I check for Concept Drift by examining whether user intent or catalog inventory has evolved. Finally, I audit the embedding index for stale vector representations, ensuring newly added documents are properly embedded and index graph connections (HNSW) are fully re-indexed."
@@ -179,7 +179,7 @@ Text is tokenized into vocabulary IDs, which map to continuous high-dimensional 
 $$\mathcal{R}_{\Theta, m}^d x_m \cdot \mathcal{R}_{\Theta, n}^d x_n = g(x_m, x_n, m - n)$$
 
 #### Vector Distance Metrics:
-- **Cosine Similarity:** $\cos(\theta) = \frac{A \cdot B}{\|A\| \|B\|}$. Invariant to text length/magnitude; universal standard for semantic search.
+- **Cosine Similarity:** $\cos(\theta) = \frac{A \cdot B}{\lVert A \rVert \lVert B \rVert}$. Invariant to text length/magnitude; universal standard for semantic search.
 - **Dot Product:** Incorporates angle and magnitude; computed directly in Transformer attention layers.
 - **Euclidean (L2) Distance:** Straight-line spatial distance: $d(A, B) = \sqrt{\sum (A_i - B_i)^2}$. Sensitive to document length.
 
@@ -261,7 +261,7 @@ $$\text{KV\_per\_request} = 4 \times 80 \times 8 \times 128 \times 4096 \times 2
 
 ### 3.4 Production Evaluation & Defense-in-Depth Guardrails
 Production releases require quantitative gating via the **RAGAS Framework**:
-1. **Faithfulness:** $\frac{|\text{Supported Claims}|}{|\text{Total Claims in Answer}|}$ (Target: $> 0.85$).
+1. **Faithfulness:** $\frac{\lvert\text{Supported Claims}\rvert}{\lvert\text{Total Claims in Answer}\rvert}$ (Target: $> 0.85$).
 2. **Answer Relevancy:** Semantic similarity between user prompt and generated response.
 3. **Context Precision:** Are the most relevant chunks positioned at the top of the context?
 4. **Context Recall:** Did the retriever fetch all facts needed to produce the reference answer?
@@ -389,7 +389,7 @@ Use these as practice prompts: answer aloud first, state assumptions, and then c
 **Answer:** Start with the task and data. For structured prediction such as churn or fraud scoring, gradient-boosted trees are often cheaper, faster, easier to calibrate, and simpler to audit. Use an LLM when the task genuinely needs language understanding or generation. Compare candidates on a representative holdout set, latency, total serving cost, explainability, and operational burden.
 
 #### 2. What is the difference between data drift and concept drift?
-**Answer:** Data drift is a change in the input distribution, P(X); concept drift is a change in the relationship between inputs and outcomes, P(Y | X). Monitor input statistics continuously, but use delayed labels, outcome metrics, and targeted audits to detect concept drift. A distribution alert is a reason to investigate, not proof that a model should be retrained.
+**Answer:** Data drift is a change in the input distribution, P(X); concept drift is a change in the relationship between inputs and outcomes, $P(Y \mid X)$. Monitor input statistics continuously, but use delayed labels, outcome metrics, and targeted audits to detect concept drift. A distribution alert is a reason to investigate, not proof that a model should be retrained.
 
 #### 3. Why does a Transformer use scaled dot-product attention?
 **Answer:** Query-key dot products tend to grow in variance with key dimension. Large logits can saturate softmax and weaken gradients. Dividing by the square root of the key dimension controls the scale, helping keep optimization stable. Attention then uses the normalized compatibility scores to mix value vectors.
