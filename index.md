@@ -1,8 +1,6 @@
 # The AI Engineer Interview Masterclass
 *The Definitive Technical Roadmap, Deep Dives, Interviewer Q&A Cards & System Design Playbook • Version 3.0*
 
----
-
 ## Table of Contents
 1. [The Staff Engineer Philosophy](#the-staff-engineer-philosophy)
 2. [Part I: Foundations (The First-Principles Baseline)](#part-i-foundations)
@@ -37,8 +35,6 @@
    - [RAG & Retrieval](#rag--retrieval)
    - [Evaluation, Reliability & Safety](#evaluation-reliability--safety)
    - [Serving & System Design](#serving--system-design)
-
----
 
 ## The Staff Engineer Philosophy
 Junior and mid-level candidates recite buzzwords and memorize API calls. Staff and Principal engineers evaluate trade-offs from first principles under real-world production constraints. In every technical and system design round, your objective is to explain:

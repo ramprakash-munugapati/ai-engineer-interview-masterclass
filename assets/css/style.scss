@@ -360,6 +360,14 @@ button {
   overflow-x: auto;
 }
 
+.reading-content mjx-container {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  vertical-align: middle;
+}
+
 .reading-content code {
   overflow-wrap: anywhere;
 }
