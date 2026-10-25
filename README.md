@@ -12,6 +12,7 @@ Mathematical expressions on the GitHub Pages site are typeset with MathJax. Enab
 - **System design:** A repeatable design framework and worked architecture case studies.
 - **Interview practice:** Questions and sample answers covering model selection, retrieval, safety, evaluation, and serving.
 - **Visual guides:** Local diagrams for the AI engineering lifecycle and a production RAG pipeline.
+- **Reading experience:** Responsive chapter navigation, adjustable text size, reading progress, and an optional focus mode.
 
 ## Start here
 

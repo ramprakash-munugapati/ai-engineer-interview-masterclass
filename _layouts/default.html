@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f8fb">
+    {% seo %}
+    <link rel="stylesheet" href="{{ "/assets/css/style.css?v=" | append: site.github.build_revision | relative_url }}">
+    {% include head-custom.html %}
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to learning content</a>
+    <header class="reader-header">
+      <div class="reader-header-inner">
+        <a class="reader-brand" href="{{ "/" | relative_url }}">AI Engineer <span>Interview Masterclass</span></a>
+        <div class="reader-controls" role="group" aria-label="Reading controls">
+          <button class="contents-toggle" id="contents-toggle" type="button" aria-controls="reading-sidebar" aria-expanded="false">Contents</button>
+          <button class="text-size-button" id="text-smaller" type="button" aria-label="Decrease text size" title="Decrease text size">A−</button>
+          <button class="text-size-button" id="text-larger" type="button" aria-label="Increase text size" title="Increase text size">A+</button>
+          <button class="focus-toggle" id="focus-toggle" type="button" aria-pressed="false">Focus mode</button>
+        </div>
+      </div>
+      <div class="reading-progress" id="reading-progress" role="progressbar" aria-label="Reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span id="reading-progress-fill"></span>
+      </div>
+    </header>
+
+    <div class="reading-layout" id="reading-layout">
+      <aside class="reading-sidebar" id="reading-sidebar" aria-label="Page contents">
+        <nav class="reading-nav" id="reading-nav" aria-label="On this page"></nav>
+      </aside>
+      <main class="markdown-body reading-content" id="main-content" tabindex="-1">
+        {{ content }}
+      </main>
+    </div>
+
+    <script src="{{ "/assets/js/reading-experience.js" | relative_url }}" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>if (window.anchors) { anchors.add(); }</script>
+  </body>
+</html>
